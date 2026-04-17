@@ -1,122 +1,103 @@
-# Package Sample Repository
+# devkit-env-diff
 
-Welcome to the **Package Sample Repository**! This project aims to help developers by providing a solid foundation for creating and maintaining PHP packages. The goal behind this repository is to simplify technical tests while showcasing your skills in building effective PHP packages.
+Compare `.env` files across named environments (local, staging, production, etc.). Surfaces **missing keys**, **extra keys**, and **value mismatches** against a baseline, with optional masking of sensitive-looking values.
 
-## Features
+## Prerequisites
 
-- **Docker Support**: This package includes a sample Dockerfile and docker-compose.yml for easy development and testing. Please ensure you have [Docker Desktop](https://www.docker.com/products/docker-desktop) installed to get started.
+- PHP **8.3+**
+- [Composer](https://getcomposer.org/)
 
-- **Composer Scripts**: Leverage Composer for dependency management. The repository comes with useful Composer scripts, including:
-  - `phpcs`: For checking coding standards.
-  - `phpmd`: For code analysis.
-  - `phpstan`: For static analysis.
-  - `rector`: For automated code upgrades and refactoring.
-  - `tests`: Run tests found within the `tests` directory.
-  
-- **Automated Testing**: A GitHub Actions workflow is set up to automatically run tests whenever you push to the repository, ensuring your code remains reliable and up to standards.
+## Install and run (this repository)
 
-- **Editable Code**: You can modify the code in the `src` directory and add your own unit tests in the `tests` directory to extend functionality.
-
-- **GitHub Template**: The repository includes a template for pull requests that you can customise to fit your project needs.
-
-## Getting Started
-
-1. **Clone the Repository**:
-   ```
-   git clone git@github.com:stuarttodd-dev/package-sample.git
-   ```
-
-2. **Navigate to repo**:
-   ```
-   cd package-sample
-   ```
-
-3. **Set Up Docker**:
-   Ensure Docker Desktop is installed and running. Build Docker container:
-   ```
-   docker compose build
-   ```
-
-4. **Spin up Docker Container**:
-   Run the Docker container:
-   ```
-   docker compose up -d
-   ```
-
-5. **Install Dependencies**:
-   Inside your Docker container, install the project dependencies using Composer:
-   ```
-   docker exec php-composer-package composer install
-   ```
-
-6. **Run the Standards Check**:
-   Execute the following command to check coding standards and static analysis:
-   ```
-   docker exec php-composer-package composer standards:check
-   ```
-
- 7. **Run Tests**:
-   Execute the following command to run tests:
-   ```
-   docker exec php-composer-package composer tests
-   ```
-
-## Sharing Your Package
-
-To make your package publicly accessible, you can either add it to **Packagist** for installation via Composer or adjust your composer.json file to include the VCS URL:
-
-### Option 1. Add to Packagist
-
-Submit your package to [Packagist.org](https://packagist.org).
-
-### Option 2. Add VCS Line in Composer
-
-Adjust your composer.json file to include the VCS URL, e.g to include this:
-```
-{
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/stuarttodd-dev/package-sample.git" 
-        }
-    ]
-}
+```bash
+cd devkit-env-diff
+composer install
 ```
 
-## Tagging Your Releases
+The CLI is available as:
 
-To create a new release for your package, you can tag your repository using the following commands:
+- `vendor/bin/devkit-env-diff` (Composer bin proxy), or  
+- `./bin/devkit-env-diff` from the repo root.
 
-1. Create a new tag:
-   ```
-   git tag -a v1.0.0 -m "Release version 1.0.0"
-   ```
-3. Push the tag to GitHub:
-   ```
-   git push origin v1.0.0
-   ```
+Show usage:
 
-## Usage Examples
-
-Once you've pulled down the package (either by adjusing your composer.json with a VCS path or adding it to packagist), it will be stored in your `vendor` folder for local access. 
-
-Here’s how you can use the `Greeter` class in your PHP project (but obviously it'd be whatever you've coded into your ``src`` directory:
-
-```
-use HalfShellStudios\PackageSample\Greeter;
-
-$greeter = new Greeter();
-echo $greeter->sayHello();   // Outputs: Well, hello there!
-echo $greeter->sayGoodbye(); // Outputs: Errr... Goodbye!
-echo $greeter->greet();      // Outputs: Well, hello there! Errr... Goodbye!
+```bash
+./vendor/bin/devkit-env-diff --help
 ```
 
-Thats it!
-   
-## Conclusion
+## Quick manual test (copy-paste)
 
-This repository serves as a foundation for creating a PHP package, making it easier for you to develop, test, and maintain your projects. Feel free to modify the code and templates to suit your needs!
+The repo includes example files under [`examples/env/`](examples/env/):
 
-If you have any questions or suggestions, feel free to open an issue in this repository.
+| File | Role |
+|------|------|
+| `local.env` | Baseline |
+| `staging.env` | Target with an extra key vs local |
+| `production.env` | Target with missing secret, extra key, and several value differences |
 
-Happy coding!
+From the project root, after `composer install`:
+
+```bash
+./vendor/bin/devkit-env-diff \
+  --baseline=local \
+  --env local=examples/env/local.env \
+  --env staging=examples/env/staging.env \
+  --env production=examples/env/production.env
+```
+
+You should see sections for **staging** and **production** vs **local**, including:
+
+- `❌ Missing in production: STRIPE_SECRET`
+- `⚠️ Extra in staging: DEBUG_MODE`
+- `⚠️ Different value: CACHE_DRIVER (...)` (and other mismatches)
+
+Exit code **1** means drift was found; **0** means no differences.
+
+### JSON output
+
+```bash
+./vendor/bin/devkit-env-diff \
+  --format=json \
+  --baseline=local \
+  --env local=examples/env/local.env \
+  --env production=examples/env/production.env
+```
+
+### Masking
+
+By default, values for keys that look sensitive (e.g. `*_SECRET`, `*PASSWORD*`, `API_*`) are shown as `***`. To print raw values:
+
+```bash
+./vendor/bin/devkit-env-diff --no-mask --baseline=local \
+  --env local=examples/env/local.env \
+  --env production=examples/env/production.env
+```
+
+Add extra [fnmatch](https://www.php.net/fnmatch) patterns:
+
+```bash
+./vendor/bin/devkit-env-diff --mask-key 'CUSTOM_*' ...
+```
+
+## Exit codes
+
+| Code | Meaning |
+|------|---------|
+| 0 | No drift (all targets match baseline for keys and values). |
+| 1 | Drift detected (missing, extra, or different values). |
+| 2 | Usage error or could not read a file. |
+
+Use exit code **1** in CI to fail a job when environments diverge.
+
+## Library usage
+
+The package namespace is `Devkit\EnvDiff`. Parse files with `EnvFileParser`, compare with `EnvironmentComparer`, or use `MultiEnvironmentDiff` for baseline-vs-many-targets workflows.
+
+## Development
+
+```bash
+composer run tests           # Pest
+composer run standards:check # PHPCS, PHPMD, PHPStan, Rector dry-run
+```
+
+GitHub Actions runs `composer install`, `composer run standards:check`, and `composer run tests` on pull requests to `main`.
