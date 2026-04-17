@@ -1,11 +1,11 @@
 {
-    "name": "devkit/env-diff",
-    "description": "Compare .env files across environments — missing keys, extras, and value drift — with optional masking.",
+    "name": "devkit/env",
+    "description": "Save, switch, and diff .env profiles — named store, backups, gitignore hints, and drift reports.",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Devkit\\EnvDiff\\": "src/"
+            "Devkit\\Env\\": "src/"
         }
     },
     "authors": [
@@ -16,6 +16,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": "^8.3",
+        "symfony/process": "^7.0",
         "vlucas/phpdotenv": "^5.6"
     },
     "require-dev": {
@@ -26,6 +27,7 @@
         "squizlabs/php_codesniffer": "^3.10"
     },
     "bin": [
+        "bin/devkit-env",
         "bin/devkit-env-diff"
     ],
     "scripts": {

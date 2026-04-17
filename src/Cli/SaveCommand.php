@@ -1,0 +1,234 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Devkit\Env\Cli;
+
+use Devkit\Env\Store\EnvProfileManager;
+use Devkit\Env\Store\ProfileName;
+use Devkit\Env\Store\ProjectConfig;
+use InvalidArgumentException;
+
+/**
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @SuppressWarnings(PHPMD.ElseExpression)
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
+final readonly class SaveCommand
+{
+    private const int EXIT_OK = 0;
+
+    private const int EXIT_ERROR = 2;
+
+    /**
+     * @param list<string> $argv arguments after "save"
+     */
+    public function run(array $argv): int
+    {
+        if ($this->hasHelpFlag($argv)) {
+            $this->printHelp();
+
+            return self::EXIT_OK;
+        }
+
+        $name = null;
+        $from = null;
+        $force = false;
+
+        try {
+            $this->parseFlags($argv, $name, $from, $force);
+        } catch (InvalidArgumentException $invalidArgumentException) {
+            fwrite(STDERR, $invalidArgumentException->getMessage() . "\n");
+
+            return self::EXIT_ERROR;
+        }
+
+        $cwd = getcwd();
+        if ($cwd === false) {
+            fwrite(STDERR, "Cannot determine current working directory.\n");
+
+            return self::EXIT_ERROR;
+        }
+
+        $config = ProjectConfig::load($cwd);
+        $manager = new EnvProfileManager($config);
+
+        $forceInteractive = false;
+        if ($name === null) {
+            if (!ConsoleHelper::isInteractive()) {
+                fwrite(STDERR, "Profile name is required when not in an interactive terminal (use --name).\n");
+
+                return self::EXIT_ERROR;
+            }
+
+            $picked = $this->promptForName($manager);
+            if ($picked === null) {
+                return self::EXIT_ERROR;
+            }
+
+            $name = $picked['name'];
+            $forceInteractive = $picked['force'];
+        }
+
+        if ($forceInteractive) {
+            $force = true;
+        }
+
+        $fromPath = $from ?? $config->targetEnvAbsolute();
+        if (!is_readable($fromPath)) {
+            fwrite(STDERR, sprintf("Cannot read source file: %s\n", $fromPath));
+
+            return self::EXIT_ERROR;
+        }
+
+        try {
+            ProfileName::validate($name);
+        } catch (InvalidArgumentException $invalidArgumentException) {
+            fwrite(STDERR, $invalidArgumentException->getMessage() . "\n");
+
+            return self::EXIT_ERROR;
+        }
+
+        try {
+            $manager->save($name, $fromPath, $force);
+        } catch (InvalidArgumentException | \RuntimeException $e) {
+            fwrite(STDERR, $e->getMessage() . "\n");
+
+            return self::EXIT_ERROR;
+        }
+
+        echo sprintf("Saved profile \"%s\" from %s\n", $name, $fromPath);
+
+        return self::EXIT_OK;
+    }
+
+    /**
+     * @param list<string> $argv
+     */
+    private function hasHelpFlag(array $argv): bool
+    {
+        foreach ($argv as $arg) {
+            if ($arg === '-h' || $arg === '--help') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param list<string> $argv
+     */
+    private function parseFlags(array $argv, ?string &$name, ?string &$from, bool &$force): void
+    {
+        $index = 0;
+        $argCount = count($argv);
+        while ($index < $argCount) {
+            $arg = $argv[$index];
+            if (str_starts_with($arg, '--name=')) {
+                $value = substr($arg, strlen('--name='));
+                if ($value === '') {
+                    throw new InvalidArgumentException('--name= requires a value.');
+                }
+
+                $name = $value;
+                ++$index;
+
+                continue;
+            }
+
+            if ($arg === '--name') {
+                ++$index;
+                $name = $argv[$index] ?? throw new InvalidArgumentException('--name requires a value.');
+                ++$index;
+
+                continue;
+            }
+
+            if (str_starts_with($arg, '--from=')) {
+                $value = substr($arg, strlen('--from='));
+                if ($value === '') {
+                    throw new InvalidArgumentException('--from= requires a path.');
+                }
+
+                $from = $value;
+                ++$index;
+
+                continue;
+            }
+
+            if ($arg === '--from') {
+                ++$index;
+                $from = $argv[$index] ?? throw new InvalidArgumentException('--from requires a path.');
+                ++$index;
+
+                continue;
+            }
+
+            if ($arg === '--force') {
+                $force = true;
+                ++$index;
+
+                continue;
+            }
+
+            throw new InvalidArgumentException(sprintf('Unknown argument: %s', $arg));
+        }
+    }
+
+    /**
+     * @return array{name: string, force: bool}|null
+     */
+    private function promptForName(EnvProfileManager $manager): ?array
+    {
+        $names = $manager->listNames();
+        if ($names !== []) {
+            echo "Existing profiles:\n";
+            foreach ($names as $i => $label) {
+                echo sprintf("  %d) %s\n", $i + 1, $label);
+            }
+
+            echo "Enter a number to overwrite that profile, or type a new profile name:\n";
+        } else {
+            echo "No saved profiles yet. Enter a profile name:\n";
+        }
+
+        $line = ConsoleHelper::prompt('> ');
+        if ($line === '') {
+            fwrite(STDERR, "Aborted.\n");
+
+            return null;
+        }
+
+        if (ctype_digit($line)) {
+            $idx = (int) $line;
+            if ($idx < 1 || $idx > count($names)) {
+                fwrite(STDERR, "Invalid selection.\n");
+
+                return null;
+            }
+
+            return ['name' => $names[$idx - 1], 'force' => true];
+        }
+
+        return ['name' => $line, 'force' => false];
+    }
+
+    private function printHelp(): void
+    {
+        echo <<<'TXT'
+Usage: devkit-env save [--name NAME] [--from PATH] [--force]
+
+Save the current (or specified) .env file into the local profile store (under ./env by default).
+
+  --name NAME     Profile label (required in non-interactive mode).
+  --from PATH     Source file (default: defaultEnv / targetEnv from .devkit-env.json, else .env).
+  --force         Overwrite an existing profile with the same name.
+
+Interactive mode (TTY): choose an existing profile by number to overwrite, or type a new name.
+
+TXT;
+    }
+}

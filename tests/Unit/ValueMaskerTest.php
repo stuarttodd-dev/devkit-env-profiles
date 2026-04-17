@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Devkit\EnvDiff\ValueMasker;
+use Devkit\Env\Diff\ValueMasker;
 
 test('masks sensitive keys by default', function (): void {
     $m = ValueMasker::withDefaults(true);

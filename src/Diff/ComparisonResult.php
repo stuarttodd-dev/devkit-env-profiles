@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\EnvDiff;
+namespace Devkit\Env\Diff;
 
 /**
  * Result of comparing a target environment against a baseline.

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Devkit\EnvDiff\MultiEnvironmentDiff;
+use Devkit\Env\Diff\MultiEnvironmentDiff;
 
 test('compares baseline to targets', function (): void {
     $base = dirname(__DIR__) . '/fixtures/env/simple.env';

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Devkit\EnvDiff\Cli;
+namespace Devkit\Env\Cli;
 
 use InvalidArgumentException;
 
 /**
- * Parses CLI arguments for devkit-env-diff.
+ * Parses CLI arguments for devkit-env diff.
  */
-final class ArgvParser
+final class DiffArgvParser
 {
     /**
      * @param list<string> $argv

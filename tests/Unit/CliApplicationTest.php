@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Devkit\EnvDiff\Cli\CliApplication;
+use Devkit\Env\Cli\MainRouter;
 
 /**
  * @return array{0: int, 1: string}
@@ -10,7 +10,7 @@ use Devkit\EnvDiff\Cli\CliApplication;
 function runDevkitBinary(array $args): array
 {
     $projectRoot = dirname(__DIR__, 2);
-    $bin = $projectRoot . '/bin/devkit-env-diff';
+    $bin = $projectRoot . '/bin/devkit-env';
     $parts = [PHP_BINARY, $bin];
     foreach ($args as $a) {
         $parts[] = $a;
@@ -70,11 +70,11 @@ test('cli json format runs', function (): void {
         ->and($out)->toContain('"baseline"');
 });
 
-test('CliApplication in-process matches binary exit code', function (): void {
+test('MainRouter in-process matches binary exit code', function (): void {
     $path = dirname(__DIR__) . '/fixtures/env/simple.env';
-    $argv = ['devkit-env-diff', '--env', 'local=' . $path, '--env', 'prod=' . $path];
+    $argv = ['devkit-env', '--env', 'local=' . $path, '--env', 'prod=' . $path];
     ob_start();
-    $code = (new CliApplication())->run($argv);
+    $code = (new MainRouter())->run($argv);
     ob_end_clean();
 
     expect($code)->toBe(0);

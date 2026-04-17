@@ -2,19 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Devkit\EnvDiff\Cli;
+namespace Devkit\Env\Cli;
 
-use Devkit\EnvDiff\MultiEnvironmentDiff;
-use Devkit\EnvDiff\Reporting\JsonReportFormatter;
-use Devkit\EnvDiff\Reporting\TextReportFormatter;
-use Devkit\EnvDiff\ValueMasker;
+use Devkit\Env\Diff\MultiEnvironmentDiff;
+use Devkit\Env\Diff\Reporting\JsonReportFormatter;
+use Devkit\Env\Diff\Reporting\TextReportFormatter;
+use Devkit\Env\Diff\ValueMasker;
 use InvalidArgumentException;
 use JsonException;
 
 /**
  * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+ * @SuppressWarnings(PHPMD.NPathComplexity)
  */
-final readonly class CliApplication
+final readonly class DiffCommand
 {
     private const int EXIT_OK = 0;
 
@@ -23,25 +25,20 @@ final readonly class CliApplication
     private const int EXIT_ERROR = 2;
 
     public function __construct(
-        private ArgvParser $argvParser = new ArgvParser(),
+        private DiffArgvParser $argvParser = new DiffArgvParser(),
     ) {
     }
 
     /**
-     * @param list<string> $argv
-     *
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @param list<string> $argv arguments only (no script name)
      */
     public function run(array $argv): int
     {
-        array_shift($argv);
-
         try {
             $options = $this->argvParser->parse($argv);
         } catch (InvalidArgumentException $invalidArgumentException) {
             fwrite(STDERR, $invalidArgumentException->getMessage() . "\n");
-            fwrite(STDERR, "Try --help for usage.\n");
+            fwrite(STDERR, "Try: devkit-env diff --help\n");
 
             return self::EXIT_ERROR;
         }
@@ -111,7 +108,7 @@ final readonly class CliApplication
     private function printHelp(): void
     {
         $help = <<<'TXT'
-Usage: devkit-env-diff --env NAME=PATH [--env NAME=PATH ...] [--baseline NAME]
+Usage: devkit-env diff --env NAME=PATH [--env NAME=PATH ...] [--baseline NAME]
        [--format text|json] [--no-mask] [--mask-key PATTERN ...]
 
 Compare .env files between a baseline environment and one or more targets.
