@@ -1,9 +1,9 @@
 ![Devkit Profiles](./devkit-logo.png)
 # devkit-profiles
 
-**Named `.env` profiles**, safe switching with backups, and **drift reports** across files — all from one Composer binary: **`./vendor/bin/devkit-env`**.
+**Named `.env` profiles**, safe switching with backups, and **drift reports** across files — all from one Composer binary: **`./vendor/bin/devkit-dev-profiles`**.
 
-Package: **`devkit/env-profiles`**. Composer also links **`./vendor/bin/devkit-env-diff`** (same program).
+Package: **`devkit/env-profiles`**.
 
 ---
 
@@ -36,28 +36,22 @@ composer install
 
 ## Run from the project root
 
-The CLI resolves **paths** and **`.devkit-env.json`** relative to the directory you run it from. Use your **application root** (where `composer.json` and usually `.env` live).
+The CLI resolves **paths** and **`.devkit-dev-profiles.json`** relative to the directory you run it from. Use your **application root** (where `composer.json` and usually `.env` live).
 
 **Recommended:** Composer’s `vendor/bin` entrypoint:
 
 ```bash
-./vendor/bin/devkit-env --help
-```
-
-Same binary, alternate name:
-
-```bash
-./vendor/bin/devkit-env-diff --help
+./vendor/bin/devkit-dev-profiles --help
 ```
 
 **Other ways to invoke it:**
 
 ```bash
-composer exec devkit-env -- --help
-php vendor/bin/devkit-env --help
+composer exec devkit-dev-profiles -- --help
+php vendor/bin/devkit-dev-profiles --help
 ```
 
-**Windows:** `vendor\bin\devkit-env.bat` or `php vendor\bin\devkit-env` from the project root.
+**Windows:** `vendor\bin\devkit-dev-profiles.bat` or `php vendor\bin\devkit-dev-profiles` from the project root.
 
 ---
 
@@ -78,7 +72,7 @@ Legacy: arguments that **start with `-`** are still handled as **`diff`** (no `d
 
 ## Configuration
 
-Optional file **`.devkit-env.json`** in the project root controls store paths, which file **`use`** writes to, and hooks after a successful switch.
+Optional file **`.devkit-dev-profiles.json`** in the project root controls store paths, which file **`use`** writes to, and hooks after a successful switch.
 
 **Important:** **`defaultEnv`** and **`targetEnv`** only affect **`use`**. When **`save`** runs **without** **`--from`**, it always reads **`./.env`** in the project root — not these keys.
 
@@ -111,14 +105,14 @@ Optional file **`.devkit-env.json`** in the project root controls store paths, w
 **One-off overrides** (see command sections below):
 
 ```bash
-./vendor/bin/devkit-env use staging --target other/path/.env
-./vendor/bin/devkit-env save --name snapshot --from other/path/.env
+./vendor/bin/devkit-dev-profiles use staging --target other/path/.env
+./vendor/bin/devkit-dev-profiles save --name snapshot --from other/path/.env
 ```
 
 Skip hooks for a single run:
 
 ```bash
-./vendor/bin/devkit-env use staging --skip-hooks
+./vendor/bin/devkit-dev-profiles use staging --skip-hooks
 ```
 
 ---
@@ -130,7 +124,7 @@ With defaults (or matching **`storeDir`** / **`backupDir`** in config):
 - **`env/`** — profile files (e.g. `staging.env`) and **`env/registry.json`** (name → file).
 - **`env/backups/`** — backups created when **`use`** replaces the target file.
 
-On first **`save`**, **`use`**, **`list`**, or **`delete`**, a marked block is appended to **`.gitignore`** so the store and backups stay local. You can commit **`.devkit-env.json`** (paths only); keep secrets and **`env/`** out of version control.
+On first **`save`**, **`use`**, **`list`**, or **`delete`**, a marked block is appended to **`.gitignore`** so the store and backups stay local. You can commit **`.devkit-dev-profiles.json`** (paths only); keep secrets and **`env/`** out of version control.
 
 ---
 
@@ -140,23 +134,23 @@ Copies content **into** the profile store under a label. Without **`--from`**, t
 
 ```bash
 # Save current ./.env as profile "staging"
-./vendor/bin/devkit-env save staging
+./vendor/bin/devkit-dev-profiles save staging
 
 # Explicit name (same as positional)
-./vendor/bin/devkit-env save --name staging
+./vendor/bin/devkit-dev-profiles save --name staging
 
 # Snapshot a different file
-./vendor/bin/devkit-env save staging --from .env.staging
-./vendor/bin/devkit-env save --name staging --from config/env/prod.env
+./vendor/bin/devkit-dev-profiles save staging --from .env.staging
+./vendor/bin/devkit-dev-profiles save --name staging --from config/env/prod.env
 ```
 
 Overwrite an existing profile without prompts in automation:
 
 ```bash
-./vendor/bin/devkit-env save staging --force
+./vendor/bin/devkit-dev-profiles save staging --force
 ```
 
-**Interactive (TTY):** run **`./vendor/bin/devkit-env save`** with no name — pick a profile by number or type a new name.
+**Interactive (TTY):** run **`./vendor/bin/devkit-dev-profiles save`** with no name — pick a profile by number or type a new name.
 
 ---
 
@@ -165,26 +159,26 @@ Overwrite an existing profile without prompts in automation:
 Copies a **saved** profile onto the configured target (usually **`.env`**), **backing up** the previous file unless you opt out.
 
 ```bash
-./vendor/bin/devkit-env use staging
+./vendor/bin/devkit-dev-profiles use staging
 
 # Write to a specific file for this run only
-./vendor/bin/devkit-env use staging --target .env.local
+./vendor/bin/devkit-dev-profiles use staging --target .env.local
 
 # Custom backup location
-./vendor/bin/devkit-env use staging --backup-dir /tmp/env-backups
+./vendor/bin/devkit-dev-profiles use staging --backup-dir /tmp/env-backups
 
 # Replace in place without keeping a backup copy
-./vendor/bin/devkit-env use staging --no-backup
+./vendor/bin/devkit-dev-profiles use staging --no-backup
 ```
 
-**Interactive (TTY):** **`./vendor/bin/devkit-env use`** without a profile name shows a numbered list.
+**Interactive (TTY):** **`./vendor/bin/devkit-dev-profiles use`** without a profile name shows a numbered list.
 
 ---
 
 ## `list` — show saved profile names
 
 ```bash
-./vendor/bin/devkit-env list
+./vendor/bin/devkit-dev-profiles list
 ```
 
 Prints one name per line, or **`(no profiles saved yet)`** if the store is empty.
@@ -196,14 +190,14 @@ Prints one name per line, or **`(no profiles saved yet)`** if the store is empty
 Removes the registry entry and the file under **`storeDir`**. Does **not** change your current working **`.env`** unless you run **`use`** afterward.
 
 ```bash
-./vendor/bin/devkit-env delete staging
-./vendor/bin/devkit-env rm staging
+./vendor/bin/devkit-dev-profiles delete staging
+./vendor/bin/devkit-dev-profiles rm staging
 ```
 
 Skip the confirmation prompt in a TTY:
 
 ```bash
-./vendor/bin/devkit-env delete staging --force
+./vendor/bin/devkit-dev-profiles delete staging --force
 ```
 
 **Interactive (TTY):** run **`delete`** or **`rm`** without a name to pick from a list; you still confirm unless **`--force`**.
@@ -215,7 +209,7 @@ Skip the confirmation prompt in a TTY:
 Compare a **baseline** to one or more **targets**: missing keys, extra keys, and mismatched values. Values are **masked** by default for sensitive-looking keys; use **`--no-mask`** or **`--mask-key`** to tune that.
 
 ```bash
-./vendor/bin/devkit-env diff \
+./vendor/bin/devkit-dev-profiles diff \
   --baseline=local \
   --env local=examples/env/local.env \
   --env staging=examples/env/staging.env \
@@ -225,13 +219,13 @@ Compare a **baseline** to one or more **targets**: missing keys, extra keys, and
 **Output format:**
 
 ```bash
-./vendor/bin/devkit-env diff --env a=examples/env/local.env --env b=examples/env/staging.env \
+./vendor/bin/devkit-dev-profiles diff --env a=examples/env/local.env --env b=examples/env/staging.env \
   --format text
 
-./vendor/bin/devkit-env diff --env a=examples/env/local.env --env b=examples/env/staging.env \
+./vendor/bin/devkit-dev-profiles diff --env a=examples/env/local.env --env b=examples/env/staging.env \
   --format json
 
-./vendor/bin/devkit-env diff --env a=examples/env/local.env --env b=examples/env/staging.env \
+./vendor/bin/devkit-dev-profiles diff --env a=examples/env/local.env --env b=examples/env/staging.env \
   --format side-by-side
 # aliases: --format wide   or   --format sidebyside
 ```
@@ -239,16 +233,16 @@ Compare a **baseline** to one or more **targets**: missing keys, extra keys, and
 **Masking:**
 
 ```bash
-./vendor/bin/devkit-env diff --env local=.env --env prod=.env.prod --no-mask
+./vendor/bin/devkit-dev-profiles diff --env local=.env --env prod=.env.prod --no-mask
 
-./vendor/bin/devkit-env diff --env local=.env --env prod=.env.prod \
+./vendor/bin/devkit-dev-profiles diff --env local=.env --env prod=.env.prod \
   --mask-key 'APP_*' --mask-key 'STRIPE_*'
 ```
 
 **Legacy invocation** (no `diff` keyword): same parser as before.
 
 ```bash
-./vendor/bin/devkit-env --baseline=local \
+./vendor/bin/devkit-dev-profiles --baseline=local \
   --env local=.env \
   --env prod=.env.prod
 ```
@@ -262,7 +256,7 @@ Compare a **baseline** to one or more **targets**: missing keys, extra keys, and
 Takes **`--left`** and **`--right`**, produces one merged env. In a TTY you resolve conflicts interactively; in scripts use **`-n` / `--no-interaction`** with **`--prefer left`** or **`--prefer right`**.
 
 ```bash
-./vendor/bin/devkit-env merge \
+./vendor/bin/devkit-dev-profiles merge \
   --left examples/env/local.env \
   --right examples/env/staging.env \
   --out merged.env
@@ -271,20 +265,20 @@ Takes **`--left`** and **`--right`**, produces one merged env. In a TTY you reso
 Print merged content to stdout (no **`--out`**):
 
 ```bash
-./vendor/bin/devkit-env merge --left .env --right .env.staging
+./vendor/bin/devkit-dev-profiles merge --left .env --right .env.staging
 ```
 
 **Non-interactive** (required **`--prefer`** when there are conflicts):
 
 ```bash
-./vendor/bin/devkit-env merge --left .env --right .env.staging --out merged.env \
+./vendor/bin/devkit-dev-profiles merge --left .env --right .env.staging --out merged.env \
   -n --prefer right
 ```
 
 **Dry run:** show what would be merged; with **`--out`**, print the bytes that would be written **without** creating the file.
 
 ```bash
-./vendor/bin/devkit-env merge --left .env --right .env.staging --dry-run --out merged.env
+./vendor/bin/devkit-dev-profiles merge --left .env --right .env.staging --dry-run --out merged.env
 ```
 
 Optional: **`--no-mask`**, repeatable **`--mask-key PATTERN`** for interactive prompts.
