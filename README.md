@@ -1,4 +1,6 @@
-# devkit-env
+# devkit-profiles
+
+![Devkit Profiles](./devkit-logo.png)
 
 **Named `.env` profiles**, safe switching with backups, and **drift reports** across files — all from one Composer binary: **`./vendor/bin/devkit-env`**.
 
