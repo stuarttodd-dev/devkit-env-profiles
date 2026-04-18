@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Parser;
+namespace Devkit\Env\Cli\Parsers;
 
-use Devkit\Env\Cli\CliGlobalOption;
-use Devkit\Env\Cli\CliProgramName;
-use Devkit\Env\Cli\Enum\DiffOutputFormat;
+use Devkit\Env\Cli\Constants\CliGlobalOption;
+use Devkit\Env\Cli\Constants\CliProgramName;
+use Devkit\Env\Cli\Enums\DiffOutputFormat;
 use InvalidArgumentException;
 
 /**

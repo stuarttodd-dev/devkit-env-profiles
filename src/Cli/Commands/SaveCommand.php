@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Command;
+namespace Devkit\Env\Cli\Commands;
 
-use Devkit\Env\Cli\CliCommandName;
-use Devkit\Env\Cli\CliGlobalOption;
-use Devkit\Env\Cli\CliProgramName;
-use Devkit\Env\Cli\ConsoleHelper;
-use Devkit\Env\ProjectLayout;
+use Devkit\Env\Cli\Constants\CliCommandName;
+use Devkit\Env\Cli\Constants\CliGlobalOption;
+use Devkit\Env\Cli\Constants\CliProgramName;
+use Devkit\Env\Cli\Constants\ProjectLayout;
+use Devkit\Env\Cli\Helpers\ConsoleHelper;
 use Devkit\Env\Store\Config\ProjectConfig;
 use Devkit\Env\Store\Service\EnvProfileManager;
 use Devkit\Env\Store\Validation\SourcePathDiagnostics;

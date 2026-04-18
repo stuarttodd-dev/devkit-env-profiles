@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Devkit\Env\Store\Validation;
 
-use Devkit\Env\ProjectLayout;
+use Devkit\Env\Cli\Constants\ProjectLayout;
 
 /**
  * Explains why a path cannot be read as an env source file.

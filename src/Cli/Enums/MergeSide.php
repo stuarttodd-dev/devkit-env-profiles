@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Enum;
+namespace Devkit\Env\Cli\Enums;
 
 use InvalidArgumentException;
 

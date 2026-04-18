@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli;
+namespace Devkit\Env\Cli\Helpers;
 
 final class ConsoleHelper
 {

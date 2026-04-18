@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Devkit\Env\Cli;
 
-use Devkit\Env\Cli\Command\DeleteCommand;
-use Devkit\Env\Cli\Command\DiffCommand;
-use Devkit\Env\Cli\Command\ListCommand;
-use Devkit\Env\Cli\Command\MergeCommand;
-use Devkit\Env\Cli\Command\SaveCommand;
-use Devkit\Env\Cli\Command\UseCommand;
-use Devkit\Env\ProjectLayout;
+use Devkit\Env\Cli\Commands\DeleteCommand;
+use Devkit\Env\Cli\Commands\DiffCommand;
+use Devkit\Env\Cli\Commands\ListCommand;
+use Devkit\Env\Cli\Commands\MergeCommand;
+use Devkit\Env\Cli\Commands\SaveCommand;
+use Devkit\Env\Cli\Commands\UseCommand;
+use Devkit\Env\Cli\Constants\CliCommandName;
+use Devkit\Env\Cli\Constants\CliGlobalOption;
+use Devkit\Env\Cli\Constants\CliProgramName;
+use Devkit\Env\Cli\Constants\ProjectLayout;
 
 /**
  * @SuppressWarnings(PHPMD.CyclomaticComplexity)

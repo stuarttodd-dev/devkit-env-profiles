@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Constant;
+namespace Devkit\Env\Cli\Constants;
 
 /**
  * Flags shared across subcommands.

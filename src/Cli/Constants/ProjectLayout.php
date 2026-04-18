@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env;
+namespace Devkit\Env\Cli\Constants;
 
 /**
  * Default filenames and paths referenced across CLI and store.

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Command;
+namespace Devkit\Env\Cli\Commands;
 
-use Devkit\Env\Cli\CliCommandName;
-use Devkit\Env\Cli\CliGlobalOption;
-use Devkit\Env\Cli\CliProgramName;
-use Devkit\Env\Cli\ConsoleHelper;
-use Devkit\Env\Cli\Constant\MergeInteractiveChoice;
-use Devkit\Env\Cli\Enum\MergeSide;
-use Devkit\Env\Cli\MergeCliOption;
-use Devkit\Env\Cli\Parser\MergeArgvParser;
+use Devkit\Env\Cli\Constants\CliCommandName;
+use Devkit\Env\Cli\Constants\CliGlobalOption;
+use Devkit\Env\Cli\Constants\CliProgramName;
+use Devkit\Env\Cli\Constants\MergeCliOption;
+use Devkit\Env\Cli\Constants\MergeInteractiveChoice;
+use Devkit\Env\Cli\Enums\MergeSide;
+use Devkit\Env\Cli\Helpers\ConsoleHelper;
+use Devkit\Env\Cli\Parsers\MergeArgvParser;
 use Devkit\Env\Diff\Encoder\EnvLineEncoder;
 use Devkit\Env\Diff\Parser\EnvFileParser;
 use Devkit\Env\Diff\Service\ValueMasker;

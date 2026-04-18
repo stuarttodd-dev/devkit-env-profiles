@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Devkit\Env\Branding;
+use Devkit\Env\Cli\Constants\Branding;
 use Devkit\Env\Store\Config\ProjectConfig;
 use Devkit\Env\Store\Service\EnvProfileManager;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Devkit\Env\Store\Config;
 
-use Devkit\Env\ProjectLayout;
+use Devkit\Env\Cli\Constants\ProjectLayout;
 use JsonException;
 
 /**

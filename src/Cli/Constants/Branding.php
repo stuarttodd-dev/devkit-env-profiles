@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env;
+namespace Devkit\Env\Cli\Constants;
 
 /**
  * Single source for the public CLI name and related markers.

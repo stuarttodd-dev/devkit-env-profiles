@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Parser;
+namespace Devkit\Env\Cli\Parsers;
 
-use Devkit\Env\Cli\CliCommandName;
-use Devkit\Env\Cli\CliGlobalOption;
-use Devkit\Env\Cli\CliProgramName;
-use Devkit\Env\Cli\Enum\MergeSide;
-use Devkit\Env\Cli\MergeCliOption;
+use Devkit\Env\Cli\Constants\CliCommandName;
+use Devkit\Env\Cli\Constants\CliGlobalOption;
+use Devkit\Env\Cli\Constants\CliProgramName;
+use Devkit\Env\Cli\Constants\MergeCliOption;
+use Devkit\Env\Cli\Enums\MergeSide;
 use InvalidArgumentException;
 
 /**

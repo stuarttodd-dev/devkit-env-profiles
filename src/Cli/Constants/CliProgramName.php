@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Constant;
-
-use Devkit\Env\Branding;
+namespace Devkit\Env\Cli\Constants;
 
 /**
  * {@see self::BINARY} is the Composer bin / basename. {@see self::VENDOR_BIN} is what we print in help
@@ -14,6 +12,6 @@ final class CliProgramName
 {
     public const string BINARY = Branding::CLI_BINARY;
 
-    /** Typical invocation when the package is installed via Composer (`./vendor/bin/…`). */
+    /** Typical invocation when the package is installed via Composer (`./vendor/bin/...`). */
     public const string VENDOR_BIN = './vendor/bin/' . Branding::CLI_BINARY;
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Devkit\Env\Store\Service;
 
-use Devkit\Env\Branding;
+use Devkit\Env\Cli\Constants\Branding;
 
 /**
  * Appends ignore patterns to the project .gitignore when missing.

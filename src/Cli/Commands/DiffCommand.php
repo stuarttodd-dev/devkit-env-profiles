@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Devkit\Env\Cli\Command;
+namespace Devkit\Env\Cli\Commands;
 
-use Devkit\Env\Cli\CliCommandName;
-use Devkit\Env\Cli\CliProgramName;
-use Devkit\Env\Cli\Enum\DiffOutputFormat;
-use Devkit\Env\Cli\Parser\DiffArgvParser;
+use Devkit\Env\Cli\Constants\CliCommandName;
+use Devkit\Env\Cli\Constants\CliProgramName;
+use Devkit\Env\Cli\Enums\DiffOutputFormat;
+use Devkit\Env\Cli\Parsers\DiffArgvParser;
 use Devkit\Env\Diff\Service\MultiEnvironmentDiff;
 use Devkit\Env\Diff\Reporting\JsonReportFormatter;
 use Devkit\Env\Diff\Reporting\SideBySideReportFormatter;
