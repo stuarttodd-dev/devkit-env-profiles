@@ -3,11 +3,22 @@
 
 declare(strict_types=1);
 
-$autoload = dirname(__DIR__) . '/vendor/autoload.php';
-if (!is_file($autoload)) {
-    $autoload = dirname(__DIR__, 4) . '/autoload.php';
+$autoloadCandidates = [
+    // Running from source checkout (repo root/bin/devkit-env).
+    dirname(__DIR__) . '/vendor/autoload.php',
+    // Running as installed package (project/vendor/devkit/env-profiles/bin/devkit-env).
+    dirname(__DIR__, 3) . '/autoload.php',
+];
+
+$autoload = null;
+foreach ($autoloadCandidates as $candidate) {
+    if (is_file($candidate)) {
+        $autoload = $candidate;
+        break;
+    }
 }
-if (!is_file($autoload)) {
+
+if ($autoload === null) {
     fwrite(STDERR, "Composer autoload not found. Run composer install.\n");
     exit(2);
 }
