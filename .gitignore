@@ -1,2 +1,5 @@
 .idea
 vendor
+linkedin-pdf/node_modules
+linkedin-pdf/package-lock.json
+linkedin-pdf/package.json
